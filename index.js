@@ -8,6 +8,7 @@ import App from './App';
 import {name as appName} from './app.json';
 import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
 import Routes from './android/app/src/navigation/Routes';
+import { AuthProvider } from './android/app/src/navigation/AuthProvider';
 
 const theme = {
     ...DefaultTheme,
@@ -24,7 +25,9 @@ const theme = {
 export default function Main(){
     return(
         <PaperProvider>
-            <Routes/>
+            <AuthProvider>
+                <Routes/>
+            </AuthProvider>
         </PaperProvider>
     );
 }
