@@ -5,6 +5,7 @@ import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import Loading from '../components/Loading';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 export default function HomeScreen({navigation}){
@@ -50,14 +51,18 @@ export default function HomeScreen({navigation}){
                 keyExtractor={(item)=>item._id}
                 ItemSeperatorComponent={()=> <Divider/>}
                 renderItem={({ item })=>(
-                    <List.Item
-                        title={item.name}
-                        description='Item description'
-                        titleNumberOfLines={1}
-                        titleStyle={styles.listTitle}
-                        descriptionStyle={styles.listDescription}
-                        descriptionNumberOfLines={1}
-                    />
+                    <TouchableOpacity
+                        onPress={()=>navigation.navigate('Room',{thread:item})}
+                    >
+                        <List.Item
+                            title={item.name}
+                            description='Item description'
+                            titleNumberOfLines={1}
+                            titleStyle={styles.listTitle}
+                            descriptionStyle={styles.listDescription}
+                            descriptionNumberOfLines={1}
+                        />
+                    </TouchableOpacity>
                 )}
             />
         </View>
