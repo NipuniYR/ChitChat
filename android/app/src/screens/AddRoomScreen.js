@@ -36,7 +36,7 @@ export default function AddRoomScreen({navigation}){
             <IconButton
               icon='close-circle'
               size={36}
-              color='#7800FF'
+              color='#6646ee'
               onPress={() => navigation.goBack()}
             />
           </View>

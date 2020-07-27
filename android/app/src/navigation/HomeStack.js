@@ -1,31 +1,39 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import AddRoomScreen from '../screens/AddRoomScreen';
 import { IconButton } from 'react-native-paper';
 import RoomScreen from '../screens/RoomScreen';
+import { AuthContext } from '../navigation/AuthProvider';
 
 const Stack = createStackNavigator();
 const ChatAppStack = createStackNavigator();
 const ModalStack = createStackNavigator();
 
 function ChatApp(){
+    const { logout } = useContext(AuthContext);
     return(
         <ChatAppStack.Navigator
             screenOptions={{
                 headerStyle:{
-                    backgroundColor: '#7800FF',
+                    backgroundColor: '#6646ee',
                 },
                 headerTintColor: '#ffffff',
                 headerBackTitleStyle: {
                     fontSize: 22,
                 },
+                headerTitleStyle:{
+                    textAlign:'center'
+                }
             }}
         >
             <ChatAppStack.Screen 
                 name='Home' 
                 component={HomeScreen} 
                 options={({navigation})=>({
+                    headerTitleStyle:{
+                        textAlign:'center'
+                    },
                     headerRight:()=>(
                         <IconButton
                             icon='message-plus'
@@ -34,15 +42,24 @@ function ChatApp(){
                             onPress={()=>navigation.navigate('AddRoom')}
                         />
                     ),
+                    headerLeft:()=>(
+                        <IconButton
+                            icon='logout-variant'
+                            size={28}
+                            color='#ffffff'
+                            onPress={()=>logout()}
+                        />
+                    )
                 })}
-                />
+            />
+
             <ChatAppStack.Screen 
                 name='Room' 
                 component={RoomScreen}
                 options={({ route }) => ({
                     title: route.params.thread.name
                 })}
-                />
+            />
         </ChatAppStack.Navigator>
     );
 }
