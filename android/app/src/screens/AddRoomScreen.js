@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View,  StyleSheet } from 'react-native';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import { IconButton, Title } from 'react-native-paper';
@@ -13,9 +13,18 @@ export default function AddRoomScreen({navigation}){
         firestore()
           .collection('THREADS')
           .add({
-            name: roomName
+            name: roomName,
+            latestMessage:{
+              text: `you have joined the room ${roomName}.`,
+              createdAt: new Date().getTime()
+            }
             })
-          .then(() => {
+          .then((docRef) => {
+            docRef.collection('MESSAGES').add({
+              text: `You have joined the room ${roomName}.`,
+              createdAt: new Date().getTime(),
+              system: true
+            });
             navigation.navigate('Home');
           });
       }
@@ -36,7 +45,7 @@ export default function AddRoomScreen({navigation}){
             <FormInput
               labelName='Room Name'
               value={roomName}
-              onChangeText={(text) => setRoomName(text)}
+              onChangeText={text => setRoomName(text)}
               clearButtonMode='while-editing'
             />
             <FormButton
