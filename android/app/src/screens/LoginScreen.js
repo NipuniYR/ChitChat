@@ -6,9 +6,9 @@ import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
 
 export default function LoginScreen({navigation}){
-    const [email, setEmail] = useState('');
+    const [email, setEmail] = useState(''); // const [] - destructuring assignment (array) 
     const [password, setPassword] = useState('');
-    const { login } = useContext(AuthContext);
+    const { login } = useContext(AuthContext); // const {} - destructuring assignment (object)
     
     return(
         <View style={styles.container}>
@@ -16,25 +16,25 @@ export default function LoginScreen({navigation}){
             <FormInput
                 labelName='Email'
                 value={email}
-                autoCapitalize='none'
+                autoCapitalize='none' //react-native TextInput props
                 onChangeText={userEmail => setEmail(userEmail)}
             />
             <FormInput
                 labelName='Password'
                 value={password}
-                secureTextEntry={true}
+                secureTextEntry={true} //react-native TextInput props
                 onChangeText={userPassword=> setPassword(userPassword)}
             />
             <FormButton
                 title='Login'
-                modeValue='contained'
+                modeValue='contained' //button with a background color and elevation shadow
                 labelStyle={styles.loginButtonLabel}
                 onPress={() => login(email, password)}
             />
             <FormButton
                 title='New User? Join here'
-                modeValue='text'
-                uppercase={false}
+                modeValue='text' //flat button without background or outline 
+                uppercase={false} //By default, this prop of react native paper is true, therefore we have to make it false
                 labelStyle={styles.navButtontext}
                 onPress={() => navigation.navigate('Signup')}
             />
