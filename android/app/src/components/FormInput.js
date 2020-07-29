@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Dimensions } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
-const { width, height } = Dimensions.get('screen'); //get the screen width and height
+const { height, width } = Dimensions.get('screen'); //get the screen width and height
 
 export default function FormInput({labelName, ...rest}){
     return(
@@ -11,6 +11,7 @@ export default function FormInput({labelName, ...rest}){
             style={styles.input}
             numberOfLines={1}
             {...rest} //to have other prop values
+            //With the help of rest parameters (..rest) a function can be called with any number of arguments 
         />
     );
 }

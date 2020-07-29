@@ -16,10 +16,6 @@ export default function RoomScreen({ route }){
     }, []);
 
     //helper method that sends a message
-    // function handleSend(newMessage = []){
-    //     setMessages(GiftedChat.append(messages, newMessage));
-    // }
-
     async function handleSend(messages){
         const text = messages[0].text;
 
@@ -87,6 +83,10 @@ export default function RoomScreen({ route }){
             <Bubble
                 {...props}
                 wrapperStyle={{
+                    left:{
+                        backgroundColor: '#ded6ff',
+                        borderRadius: 15
+                    },
                     right:{
                         backgroundColor: '#6646ee'
                     }
