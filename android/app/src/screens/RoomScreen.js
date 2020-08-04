@@ -7,7 +7,7 @@ import firestore from '@react-native-firebase/firestore';
 
 export default function RoomScreen({ route }){
     const { user } = useContext(AuthContext);
-    const currentUser = user.toJSON();
+    const currentUser = user.toJSON(); //coverting data to JSON object
     const [messages, setMessages] = useState([]);
     const { thread } = route.params;
 
@@ -41,7 +41,7 @@ export default function RoomScreen({ route }){
                     createdAt: new Date().getTime()
                 }
             },
-            {merge: true}
+            {merge: true} //update fields in the document or create it if it doesn't exists
             );
     }
 

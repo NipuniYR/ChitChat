@@ -1,8 +1,6 @@
-import React, {useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { Title, List, Divider } from 'react-native-paper';
-import FormButton from '../components/FormButton';
-import { AuthContext } from '../navigation/AuthProvider';
+import { List, Divider } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import Loading from '../components/Loading';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -17,7 +15,7 @@ export default function HomeScreen({navigation}){
         const unsubscribe = firestore()
             .collection('THREADS')
             .orderBy('latestMessage.createdAt','desc')
-            .onSnapshot((querySnapshot)=>{
+            .onSnapshot((querySnapshot)=>{ //creates a snapshot and updates everytime when the content changed 
                 const threads = querySnapshot.docs.map(documentSnapshot=>{
                     return{
                         _id: documentSnapshot.id,
@@ -25,7 +23,8 @@ export default function HomeScreen({navigation}){
                         latestMessage:{
                             text:''
                         },
-                        ...documentSnapshot.data(),
+                        ...documentSnapshot.data() 
+                        //... - spread operator - allows an iterable such as an array to be expanded in places where zero or more elements are expected
                     };
                 });
                 setThreads(threads);
@@ -43,20 +42,14 @@ export default function HomeScreen({navigation}){
  
     return(
         <View style={styles.container}>
-            {/*<Title>Home Screen</Title>
-            <Title>Welcome {user.uid}</Title>
-            <FormButton 
-                modeValue='contained' 
-                title='Logout'
-                onPress={()=>logout()}
-            />*/}
             <FlatList
                 data={threads}
                 keyExtractor={item=>item._id}
-                ItemSeperatorComponent={()=> <Divider/>}
+                ItemSeperatorComponent={()=> <Divider />}
                 renderItem={({ item })=>(
                     <TouchableOpacity
                         onPress={()=>navigation.navigate('Room',{thread:item})}
+                        //onLongPress={()=>{}} try this thing later
                     >
                         <List.Item
                             title={item.name}

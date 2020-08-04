@@ -12,7 +12,7 @@ export default function AddRoomScreen({navigation}){
       if (roomName.length > 0) {
         firestore()
           .collection('THREADS')
-          .add({
+          .add({ //add() - let cloud firestore auto generate document id
             name: roomName,
             latestMessage:{
               text: `you have joined the room ${roomName}.`,
@@ -46,14 +46,14 @@ export default function AddRoomScreen({navigation}){
               labelName='Room Name'
               value={roomName}
               onChangeText={text => setRoomName(text)}
-              clearButtonMode='while-editing'
+              //clearButtonMode='while-editing'
             />
             <FormButton
               title='Create'
               modeValue='contained'
               labelStyle={styles.buttonLabel}
               onPress={() => handleButtonPress()}
-              disabled={roomName.length === 0}
+              disabled={roomName.length === 0} //=== - no type conversion and return true only if both value and type are identical
             />
           </View>
         </View>
