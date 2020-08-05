@@ -49,7 +49,6 @@ export default function HomeScreen({navigation}){
                 renderItem={({ item })=>(
                     <TouchableOpacity
                         onPress={()=>navigation.navigate('Room',{thread:item})}
-                        //onLongPress={()=>{}} try this thing later
                     >
                         <List.Item
                             title={item.name}

@@ -1,19 +1,29 @@
 import React, {useContext, useState} from 'react';
 import { Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from '../screens/HomeScreen';
-import AddRoomScreen from '../screens/AddRoomScreen';
-import { IconButton } from 'react-native-paper';
-import RoomScreen from '../screens/RoomScreen';
+import { IconButton, Menu } from 'react-native-paper';
 import { AuthContext } from '../navigation/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
+import HomeScreen from '../screens/HomeScreen';
+import AddRoomScreen from '../screens/AddRoomScreen';
+import RoomScreen from '../screens/RoomScreen';
+import EditRoomScreen from '../screens/EditRoomScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import EditMessageScreen from '../screens/EditMessageScreen';
 
-const Stack = createStackNavigator();
 const ChatAppStack = createStackNavigator();
 const ModalStack = createStackNavigator();
 
 function ChatApp(){
     const { logout } = useContext(AuthContext);
+    const [visibleHome, setVisibleHome] = useState(false);
+    const [visibleRoom, setVisibleRoom] = useState(false);
+
+    const openMenuHome = () => setVisibleHome(true);
+    const closeMenuHome = () => setVisibleHome(false);
+
+    const openMenuRoom = () => setVisibleRoom(true);
+    const closeMenuRoom = () => setVisibleRoom(false);
 
     return(
         <ChatAppStack.Navigator
@@ -44,12 +54,29 @@ function ChatApp(){
                         />
                     ),
                     headerLeft:()=>(
-                        <IconButton
-                            icon='logout-variant'
-                            size={28}
-                            color='#ffffff'
-                            onPress={()=>logout()}
+                        <Menu
+                            visible={visibleHome}
+                            onDismiss={closeMenuHome}
+                            anchor={<IconButton
+                                    icon='menu'
+                                    size={28}
+                                    color='#ffffff'
+                                    onPress={openMenuHome}
+                                />}
+                        >
+                        <Menu.Item 
+                                title='View Profile'
+                                onPress={()=>{
+                                    navigation.navigate('Profile');
+                                    closeMenuHome();
+                                }}
+                                
                         />
+                        <Menu.Item 
+                                title='Logout'
+                                onPress={()=>logout()}
+                        />
+                        </Menu>
                     )
                 })}
             />
@@ -62,37 +89,67 @@ function ChatApp(){
                     //name - name of the room stored in the firestore
                     title: route.params.thread.name,
                     headerRight:()=>(
+                        <Menu
+                            visible={visibleRoom}
+                            onDismiss={closeMenuRoom}
+                            anchor={<IconButton
+                                    icon='menu-down'
+                                    size={28}
+                                    color='#ffffff'
+                                    onPress={openMenuRoom}
+                                />}
+                        >
+                                <Menu.Item
+                                    title="Edit Room"
+                                    onPress={()=>{
+                                        navigation.navigate('EditRoom',{id:route.params.thread._id,name:route.params.thread.name});
+                                        closeMenuRoom();
+                                    }}
+                                />
+                                <Menu.Item
+                                    title="Delete Room"
+                                    onPress={()=>{
+                                        console.log("These are the route parameters "+route.params.thread._id)
+                                        Alert.alert(
+                                            'Delete Room',
+                                            'Are you sure you want to delete this Room?',
+                                            [
+                                                {
+                                                    text: 'Yes',
+                                                    onPress: () => {
+                                                        const docRef = firestore()
+                                                            .collection('THREADS')
+                                                            .doc(route.params.thread._id)
+        
+                                                        docRef.delete()
+                                                            .then(res=>{
+                                                                console.log("Room deleted successfully");
+                                                                navigation.navigate('Home');
+                                                            })
+                                                    }
+                                                },
+                                                {
+                                                    text: 'No'
+                                                }
+                                            ],
+                                            { cancelable: false }
+                                        );
+                                    }}
+                                />
+                        </Menu>
+                    )
+                })}
+            />
+            <ChatAppStack.Screen
+                name='Profile'
+                component={ProfileScreen}
+                options={({navigation})=>({
+                    headerRight:()=>(
                         <IconButton
-                            icon='delete'
+                            icon='account-edit'
                             size={28}
                             color='#ffffff'
-                            onPress={()=>{
-                                console.log("These are the route parameters "+route.params.thread._id)
-                                Alert.alert(
-                                    'Delete Room',
-                                    'Are you sure you want to delete this Room?',
-                                    [
-                                        {
-                                            text: 'Yes',
-                                            onPress: () => {
-                                                const docRef = firestore()
-                                                    .collection('THREADS')
-                                                    .doc(route.params.thread._id)
-
-                                                docRef.delete()
-                                                    .then(res=>{
-                                                        console.log("Room deleted successfully");
-                                                        navigation.navigate('Home');
-                                                    })
-                                            }
-                                        },
-                                        {
-                                            text: 'No'
-                                        }
-                                    ],
-                                    { cancelable: false }
-                                );
-                            }}
+                            onPress={()=>console.log("Navigate to EditProfile page")}
                         />
                     )
                 })}
@@ -108,6 +165,8 @@ export default function HomeStack(){
         <ModalStack.Navigator mode='modal' /* to made the screens slide up */ headerMode='none'>
             <ModalStack.Screen name='ChatApp' component={ChatApp} />
             <ModalStack.Screen name='AddRoom' component={AddRoomScreen} />
+            <ModalStack.Screen name='EditRoom' component={EditRoomScreen}/>
+            <ModalStack.Screen name='EditMessage' component={EditMessageScreen}/>
         </ModalStack.Navigator>
     );
 }
