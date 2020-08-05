@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert} from 'react-native';
 import { Title, IconButton } from 'react-native-paper';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
@@ -8,6 +8,7 @@ import { AuthContext } from '../navigation/AuthProvider';
 export default function SignupScreen({navigation}){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [rePassword, setRePassword] = useState('');
     const { register } = useContext(AuthContext);
 
     return(
@@ -25,11 +26,24 @@ export default function SignupScreen({navigation}){
                 secureTextEntry={true}
                 onChangeText={userPassword => setPassword(userPassword)}
             />
+            <FormInput
+                labelName='Re-Password'
+                value={rePassword}
+                secureTextEntry={true}
+                onChangeText={rePassword => setRePassword(rePassword)}
+            />
             <FormButton
                 title='Signup'
                 modeValue='contained'
                 labelStyle={styles.loginButtonLabel}
-                onPress={() => register(email, password)}
+                onPress={() => {
+                    if(rePassword==password){
+                        register(email, password);
+                    }
+                    else{
+                        Alert.alert('Error','Re-Password do not match. Please try again.');
+                    }
+                }}
             />
             <IconButton
                 icon='keyboard-backspace'

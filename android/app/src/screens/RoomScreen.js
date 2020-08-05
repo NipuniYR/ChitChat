@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { GiftedChat, Bubble, Send, SystemMessage } from 'react-native-gifted-chat';
 import { IconButton } from 'react-native-paper';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 
-export default function RoomScreen({ route }){
+export default function RoomScreen({ route, navigation }){
     const { user } = useContext(AuthContext);
     const currentUser = user.toJSON(); //coverting data to JSON object
     const [messages, setMessages] = useState([]);
@@ -41,7 +41,7 @@ export default function RoomScreen({ route }){
                     createdAt: new Date().getTime()
                 }
             },
-            {merge: true} //update fields in the document or create it if it doesn't exists
+            {merge: true} //update fields in the document or create it if it doesn't exist
             );
     }
 
@@ -136,6 +136,56 @@ export default function RoomScreen({ route }){
         );
     }
 
+    function handleBubbleLongPress(context, message){
+        console.log("Bubble long pressed ");
+        if(message.user.email==user.email){
+            const options=['Edit Message','Delete Message','Cancel'];
+            const cancelButtonIndex = options.length-1;
+            context.actionSheet().showActionSheetWithOptions({
+                options,
+                cancelButtonIndex
+            }, buttonIndex=>{
+                switch(buttonIndex){
+                    case 0:
+                        console.log("Pressed edit");
+                        navigation.navigate('EditMessage',{threadID:thread._id,msgID:message._id,text:message.text});
+                        break;
+                    case 1:
+                        console.log("Pressed delete");
+                        Alert.alert(
+                            'Delete Message',
+                            'Are you sure you want to delete this message?',
+                            [
+                                {
+                                    text: 'Yes',
+                                    onPress: () => {
+                                        const docRef = firestore()
+                                            .collection('THREADS')
+                                            .doc(thread._id)
+                                            .collection('MESSAGES')
+                                            .doc(message._id)
+
+                                        docRef.delete()
+                                            .then(res=>{
+                                                console.log("Room deleted successfully");
+                                                navigation.navigate('Home');
+                                            }).catch(error=>{
+                                                console.log(error);
+                                            })
+                                    }
+                                },
+                                {
+                                    text: 'No'
+                                }
+                            ],
+                            { cancelable: false }
+                        );
+                        break;
+                }
+            });
+        }
+    }
+
     return(
         <GiftedChat
             messages={messages}
@@ -143,6 +193,7 @@ export default function RoomScreen({ route }){
             user={{_id: currentUser.uid}}
             placeholder='Type your message here...'
             renderBubble={renderBubble}
+            onLongPress={handleBubbleLongPress}
             showUserAvatar
             renderSend={renderSend}
             scrollToBottom
