@@ -1,6 +1,7 @@
 import React, { createContext, useState } from 'react';
 import { Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 export const AuthContext = createContext({});
 
@@ -17,17 +18,17 @@ export const AuthProvider = ({children}) => {
                         //await - wait until the promise settles (doesn’t cost any CPU resources, because the engine can do other jobs in the meantime)
                         await auth().signInWithEmailAndPassword(email,password);
                     }
-                    catch(e){
-                        console.log(e);
-                        if (e.code === 'auth/invalid-email') {
+                    catch(error){
+                        console.log(error);
+                        if (error.code === 'auth/invalid-email') {
                             console.log('That email address is invalid!');
                             Alert.alert('Error','Invalid email. Please try again.');
                         }
-                        else if (e.code === 'auth/user-not-found') {
+                        else if (error.code === 'auth/user-not-found') {
                             console.log('User not found');
                             Alert.alert('Error','User not found. Please register.');
                         }
-                        else if (e.code === 'auth/wrong-password') {
+                        else if (error.code === 'auth/wrong-password') {
                             console.log('That password is incorrect');
                             Alert.alert('Error','Incorrect password. Please try again.');
                         }
@@ -38,31 +39,42 @@ export const AuthProvider = ({children}) => {
                     }
                 },
                 register: async (email,password) => {
-                    try{
-                        await auth().createUserWithEmailAndPassword(email,password);
-                    }
-                    catch(e){
-                        console.log(e);
-                        if (e.code === 'auth/invalid-email') {
+                        await auth().createUserWithEmailAndPassword(email,password)
+                            .then(userCreds=>{
+                                firestore()
+                                    .collection('USERS')
+                                    .add({
+                                        uid: userCreds.user.uid,
+                                        email: userCreds.user.email
+                                    }).then(res=>{
+                                        console.log("Added new user");
+                                    })
+                            }).catch(error=>{
+                        console.log(error);
+                        if (error.code === 'auth/invalid-email') {
                             console.log('That email address is invalid!');
                             Alert.alert('Error','Invalid email. Please try again.');
                         }
-                        else if (e.code === 'auth/email-already-in-use') {
+                        else if (error.code === 'auth/email-already-in-use') {
                             console.log('Email alredy in use');
                             Alert.alert('Error','That email is already in use. Please login or try again using another email.');
+                        }
+                        else if (error.code === 'auth/weak-password'){
+                            console.log('Weak Password');
+                            Alert.alert('Error','That password is too weak. Try again with a new password.');
                         }
                         else{
                             console.log('An error occured');
                             Alert.alert('Error','Oops... An error occured');
                         }
-                    }
+                    });
                 },
                 logout: async () => {
                     try{
                         await auth().signOut();
                     }
-                    catch(e){
-                        console.error(e);
+                    catch(error){
+                        console.error(error);
                     }
                 }
             }}

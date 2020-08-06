@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View,  StyleSheet } from 'react-native';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import { IconButton, Title } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
+import { AuthContext } from '../navigation/AuthProvider';
 
 export default function AddRoomScreen({navigation}){
+    const { user } = useContext(AuthContext);
     const [roomName, setRoomName] = useState('');
 
     function handleButtonPress() {
@@ -17,7 +19,10 @@ export default function AddRoomScreen({navigation}){
             latestMessage:{
               text: `you have joined the room ${roomName}.`,
               createdAt: new Date().getTime()
-            }
+            },
+            users:[
+              user.email
+            ]
             })
           .then((docRef) => {
             docRef.collection('MESSAGES').add({

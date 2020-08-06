@@ -1,16 +1,32 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { Title, Text } from 'react-native-paper';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
-import auth from '@react-native-firebase/auth';
+import auth, { firebase } from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 export default function ProfileScreen(){
     const { user } = useContext(AuthContext);
     const currentUser = user.toJSON();
     const [email, setEmail] = useState(currentUser.email);
     const [oldPassword, setOldPassword] = useState('');
+    const [userDocID, setUserDocID] = useState([]);
+
+    useEffect(()=>{
+        firestore()
+            .collection('USERS')
+            .where('email','==',user.email)
+            .get()
+            .then(querySnapshot=>{
+                querySnapshot.forEach(doc=>{
+                    setUserDocID(doc.id);
+                })
+            }).catch(error=>{
+                console.log(error);
+            });
+    }, []);
 
     return(
         <View style={styles.container}>
@@ -54,10 +70,20 @@ export default function ProfileScreen(){
                                                 user.delete()
                                                     .then(res=>{
                                                         console.log("User deleted successfully");
+                                                        docRef = firestore()
+                                                            .collection('USERS')
+                                                            .doc(userDocID)
+                                                            
+                                                        docRef.delete()
+                                                            .then(res=>{
+                                                                console.log("User removed");
+                                                            }).catch(error=>{
+                                                                console.log(error);
+                                                            });
                                                     }).catch(error=>{
                                                         Alert.alert('Error','Account delete failed. Please try again.');
                                                         console.log(error);
-                                                    })
+                                                    });
                                             }).catch(error=>{
                                                 if (error.code === 'auth/wrong-password') {
                                                     console.log('That password is incorrect');
@@ -67,7 +93,7 @@ export default function ProfileScreen(){
                                                     Alert.alert('Error','Re-authentication Failed.');
                                                     console.log(error);
                                                 }
-                                            })
+                                            });
                                     }
                                 },
                                 {
