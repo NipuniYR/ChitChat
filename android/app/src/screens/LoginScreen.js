@@ -30,6 +30,7 @@ export default function LoginScreen({navigation}){
                 modeValue='contained' //button with a background color and elevation shadow
                 labelStyle={styles.loginButtonLabel}
                 onPress={() => login(email, password)}
+                disabled={email.length===0 || password.length===0}
             />
             <FormButton
                 title='New User? Join here'

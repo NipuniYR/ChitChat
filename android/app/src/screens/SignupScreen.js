@@ -36,6 +36,7 @@ export default function SignupScreen({navigation}){
                 title='Signup'
                 modeValue='contained'
                 labelStyle={styles.loginButtonLabel}
+                disabled={email.length===0 || password.length===0 || rePassword.length===0}
                 onPress={() => {
                     if(rePassword==password){
                         register(email, password);

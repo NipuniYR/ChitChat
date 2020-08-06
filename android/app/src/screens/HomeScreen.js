@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { List, Divider } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import Loading from '../components/Loading';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import { AuthContext } from '../navigation/AuthProvider';
 
 export default function HomeScreen({navigation}){
-    //const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [threads, setThreads] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(()=>{
         const unsubscribe = firestore()
             .collection('THREADS')
+            .where('users','array-contains',user.email)
             .orderBy('latestMessage.createdAt','desc')
             .onSnapshot((querySnapshot)=>{ //creates a snapshot and updates everytime when the content changed 
                 const threads = querySnapshot.docs.map(documentSnapshot=>{
@@ -26,8 +27,11 @@ export default function HomeScreen({navigation}){
                         ...documentSnapshot.data() 
                         //... - spread operator - allows an iterable such as an array to be expanded in places where zero or more elements are expected
                     };
+                },error=>{
+                    console.log(error)
                 });
                 setThreads(threads);
+                console.log(threads);
                 if(loading){
                     setLoading(false);
                 }

@@ -1,10 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { IconButton, Title, Text } from 'react-native-paper';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 export default function EditProfileScreen({navigation}){
     const { user } = useContext(AuthContext);
@@ -13,6 +14,22 @@ export default function EditProfileScreen({navigation}){
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [rePassword, setRePassword] = useState('');
+    const [userDocID, setUserDocID] = useState('');
+
+    useEffect(()=>{
+        firestore()
+            .collection('USERS')
+            .where('email','==',user.email)
+            .get()
+            .then(querySanpshot=>{
+                querySanpshot.forEach(doc=>{
+                    setUserDocID(doc.id);
+                    console.log(userDocID);
+                })
+            }).catch(error=>{
+                console.log(error);
+            });
+    }, []);
 
     return(
         <View style={styles.container}>
@@ -73,6 +90,17 @@ export default function EditProfileScreen({navigation}){
                                                 user.updateEmail(email)
                                                     .then(res=>{
                                                         console.log("Email updated successfully");
+                                                        docRef = firestore()
+                                                            .collection('USERS')
+                                                            .doc(userDocID)
+
+                                                        docRef.update({
+                                                            email:email
+                                                        }).then(res=>{
+                                                            console.log("User updated");
+                                                        }).catch(error=>{
+                                                            console.log(error);
+                                                        });
                                                         logout();
                                                     }).catch(error=>{
                                                         if (error.code === 'auth/invalid-email') {
