@@ -10,6 +10,7 @@ import RoomScreen from '../screens/RoomScreen';
 import EditRoomScreen from '../screens/EditRoomScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditMessageScreen from '../screens/EditMessageScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 const ChatAppStack = createStackNavigator();
 const ModalStack = createStackNavigator();
@@ -149,7 +150,7 @@ function ChatApp(){
                             icon='account-edit'
                             size={28}
                             color='#ffffff'
-                            onPress={()=>console.log("Navigate to EditProfile page")}
+                            onPress={()=>navigation.navigate('EditProfile')}
                         />
                     )
                 })}
@@ -167,6 +168,7 @@ export default function HomeStack(){
             <ModalStack.Screen name='AddRoom' component={AddRoomScreen} />
             <ModalStack.Screen name='EditRoom' component={EditRoomScreen}/>
             <ModalStack.Screen name='EditMessage' component={EditMessageScreen}/>
+            <ModalStack.Screen name='EditProfile' component={EditProfileScreen}/>
         </ModalStack.Navigator>
     );
 }
