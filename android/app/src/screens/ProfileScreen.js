@@ -55,11 +55,18 @@ export default function ProfileScreen(){
                                                     .then(res=>{
                                                         console.log("User deleted successfully");
                                                     }).catch(error=>{
-                                                        console.log("Account delete error "+ {error});
+                                                        Alert.alert('Error','Account delete failed. Please try again.');
+                                                        console.log(error);
                                                     })
                                             }).catch(error=>{
-                                                Alert.alert('Error',"Couldn't re authenticate. Please retype the password and try again.");
-                                                console.log("Re-Authenticate error "+ {error});
+                                                if (error.code === 'auth/wrong-password') {
+                                                    console.log('That password is incorrect');
+                                                    Alert.alert('Error',"Re-authentication failed. Incorrect Password. Please try again.");
+                                                }
+                                                else{
+                                                    Alert.alert('Error','Re-authentication Failed.');
+                                                    console.log(error);
+                                                }
                                             })
                                     }
                                 },
