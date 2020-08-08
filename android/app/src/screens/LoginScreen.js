@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Title } from 'react-native-paper';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
@@ -12,6 +12,8 @@ export default function LoginScreen({navigation}){
     
     return(
         <View style={styles.container}>
+            <Text style={styles.details}>Name: Rupasinghe D N N Y</Text>
+            <Text style={styles.details}>Index: 17001463</Text>
             <Title style={styles.titleText}>Welcome to ChitChat</Title>
             <FormInput
                 labelName='Email'
@@ -59,5 +61,9 @@ const styles = StyleSheet.create({
     },
     navButtontext:{
         fontSize: 16
+    },
+    details:{
+        fontSize: 18,
+        color: '#6646ee'
     }
 });

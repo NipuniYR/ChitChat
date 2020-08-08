@@ -20,22 +20,7 @@ export const AuthProvider = ({children}) => {
                     }
                     catch(error){
                         console.log(error);
-                        if (error.code === 'auth/invalid-email') {
-                            console.log('That email address is invalid!');
-                            Alert.alert('Error','Invalid email. Please try again.');
-                        }
-                        else if (error.code === 'auth/user-not-found') {
-                            console.log('User not found');
-                            Alert.alert('Error','User not found. Please register.');
-                        }
-                        else if (error.code === 'auth/wrong-password') {
-                            console.log('That password is incorrect');
-                            Alert.alert('Error','Incorrect password. Please try again.');
-                        }
-                        else{
-                            console.log('An error occured');
-                            Alert.alert('Error','Oops... An error occured');
-                        }
+                        Alert.alert('Error',error.message);
                     }
                 },
                 register: async (email,password) => {
@@ -50,23 +35,8 @@ export const AuthProvider = ({children}) => {
                                         console.log("Added new user");
                                     })
                             }).catch(error=>{
-                        console.log(error);
-                        if (error.code === 'auth/invalid-email') {
-                            console.log('That email address is invalid!');
-                            Alert.alert('Error','Invalid email. Please try again.');
-                        }
-                        else if (error.code === 'auth/email-already-in-use') {
-                            console.log('Email alredy in use');
-                            Alert.alert('Error','That email is already in use. Please login or try again using another email.');
-                        }
-                        else if (error.code === 'auth/weak-password'){
-                            console.log('Weak Password');
-                            Alert.alert('Error','That password is too weak. Try again with a new password.');
-                        }
-                        else{
-                            console.log('An error occured');
-                            Alert.alert('Error','Oops... An error occured');
-                        }
+                            console.log(error);
+                            Alert.alert('Error',error.message);
                     });
                 },
                 logout: async () => {

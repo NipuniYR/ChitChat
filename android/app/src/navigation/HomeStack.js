@@ -11,6 +11,8 @@ import EditRoomScreen from '../screens/EditRoomScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditMessageScreen from '../screens/EditMessageScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
+import PeopleScreen from '../screens/PeopleScreen';
+import AddPeopleScreen from '../screens/AddPeopleScreen';
 
 const ChatAppStack = createStackNavigator();
 const ModalStack = createStackNavigator();
@@ -101,6 +103,13 @@ function ChatApp(){
                                 />}
                         >
                                 <Menu.Item
+                                    title= "People"
+                                    onPress={()=>{
+                                        navigation.navigate('People',{id:route.params.thread._id});
+                                        closeMenuRoom();
+                                    }}
+                                />
+                                <Menu.Item
                                     title="Edit Room"
                                     onPress={()=>{
                                         navigation.navigate('EditRoom',{id:route.params.thread._id,name:route.params.thread.name});
@@ -155,6 +164,25 @@ function ChatApp(){
                     )
                 })}
             />
+            <ChatAppStack.Screen
+                name='People'
+                component={PeopleScreen}
+                options={({ navigation, route }) => ({
+                    headerRight:()=>(
+                        <IconButton
+                            icon='account-multiple-plus'
+                            size={28}
+                            color='#ffffff'
+                            onPress={()=>navigation.navigate('Registered Users',{id:route.params.id})}
+                        />
+                    )
+                })}
+            />
+
+            {/*<ChatAppStack.Screen
+                name='Registered Users'
+                component={AddPeopleScreen}
+            />*/}
         </ChatAppStack.Navigator>
     );
 }
@@ -169,6 +197,7 @@ export default function HomeStack(){
             <ModalStack.Screen name='EditRoom' component={EditRoomScreen}/>
             <ModalStack.Screen name='EditMessage' component={EditMessageScreen}/>
             <ModalStack.Screen name='EditProfile' component={EditProfileScreen}/>
+            <ModalStack.Screen name='Registered Users' component={AddPeopleScreen}/>
         </ModalStack.Navigator>
     );
 }

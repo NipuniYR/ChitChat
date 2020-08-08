@@ -79,20 +79,15 @@ export default function ProfileScreen(){
                                                                 console.log("User removed");
                                                             }).catch(error=>{
                                                                 console.log(error);
+                                                                Alert.alert('Error',error.message);
                                                             });
                                                     }).catch(error=>{
-                                                        Alert.alert('Error','Account delete failed. Please try again.');
                                                         console.log(error);
+                                                        Alert.alert('Error',error.message);
                                                     });
                                             }).catch(error=>{
-                                                if (error.code === 'auth/wrong-password') {
-                                                    console.log('That password is incorrect');
-                                                    Alert.alert('Error',"Re-authentication failed. Incorrect Password. Please try again.");
-                                                }
-                                                else{
-                                                    Alert.alert('Error','Re-authentication Failed.');
-                                                    console.log(error);
-                                                }
+                                                console.log(error);
+                                                Alert.alert('Error',error.message);
                                             });
                                     }
                                 },

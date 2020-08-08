@@ -100,32 +100,16 @@ export default function EditProfileScreen({navigation}){
                                                             console.log("User updated");
                                                         }).catch(error=>{
                                                             console.log(error);
+                                                            Alert.alert('Error',error.message);
                                                         });
                                                         logout();
                                                     }).catch(error=>{
-                                                        if (error.code === 'auth/invalid-email') {
-                                                            console.log('That email address is invalid!');
-                                                            Alert.alert('Error','Invalid email. Please try again.');
-                                                        }
-                                                        else if (error.code === 'auth/email-already-in-use') {
-                                                            console.log('Email alredy in use');
-                                                            Alert.alert('Error','That email is already in use. Please login or try again using another email.');
-                                                        }
-                                                        else{
-                                                            console.log('An error occured');
                                                             console.log(error);
-                                                            Alert.alert('Error',"Oops... An error occured. Couldn't update email.");
-                                                        }
+                                                            Alert.alert('Error',error.message);
                                                     })
                                             }).catch(error=>{
-                                                if (error.code === 'auth/wrong-password') {
-                                                    console.log('That password is incorrect');
-                                                    Alert.alert('Error',"Re-authentication failed. Incorrect Password. Please try again.");
-                                                }
-                                                else{
-                                                    Alert.alert('Error','Re-authentication Failed.');
                                                     console.log(error);
-                                                }
+                                                    Alert.alert('Error',error.message);
                                             })
                                     }
                                     if(newPassword.length > 0 && rePassword.length > 0){
@@ -142,18 +126,12 @@ export default function EditProfileScreen({navigation}){
                                                             console.log("Password updated successfully");
                                                             logout();
                                                         }).catch(error=>{
-                                                            Alert.alert('Error',"Couldn't update password. Please try again.");
+                                                            Alert.alert('Error',error.message);
                                                             console.log(error);
                                                         })
                                                 }).catch(error=>{
-                                                    if (error.code === 'auth/wrong-password') {
-                                                        console.log('That password is incorrect');
-                                                        Alert.alert('Error',"Re-authentication failed. Incorrect Password. Please try again.");
-                                                    }
-                                                    else{
-                                                        Alert.alert('Error','Re-authentication Failed.');
                                                         console.log(error);
-                                                    }
+                                                        Alert.alert('Error',error.message);
                                                 })
                                         }
                                     }
