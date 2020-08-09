@@ -20,12 +20,11 @@ export default function EditProfileScreen({navigation}){
     useEffect(()=>{
         firestore()
             .collection('USERS')
-            .where('email','==',user.email)
+            .where('uid','==',user.uid)
             .get()
             .then(querySanpshot=>{
                 querySanpshot.forEach(doc=>{
                     setUserDocID(doc.id);
-                    console.log(userDocID);
                 })
             }).catch(error=>{
                 console.log(error);
@@ -85,7 +84,7 @@ export default function EditProfileScreen({navigation}){
                     title='Update Profile'
                     modeValue='contained' //button with a background color and elevation shadow
                     labelStyle={styles.updateButtonLabel}
-                    disabled={oldPassword.length === 0 || email.length === 0 || ((user.email != email) && (newPassword.length > 0)) || ((user.email === email) && (newPassword.length === 0) && (user.displayName === name)) || ((newPassword.length > 0) && (rePassword.length == 0))}
+                    disabled={oldPassword.length === 0 || email.length === 0 || name.length === 0 || ((user.email != email) && (newPassword.length > 0)) || ((user.email === email) && (newPassword.length === 0) && (user.displayName === name)) || ((newPassword.length > 0) && (rePassword.length == 0))}
                     onPress={() => {
                         Alert.alert('Update Profile','Are you sure you want to update profile?',
                             [
@@ -103,8 +102,15 @@ export default function EditProfileScreen({navigation}){
                                                         name:name
                                                     }).then(res=>{
                                                         console.log("User updated");
-                                                }).catch(error=>console.log(error));
-                                            }).catch(error=>console.log(error));
+                                                        Alert.alert('Successful','User updated successfully');
+                                                }).catch(error=>{
+                                                    console.log(error);
+                                                    Alert.alert('Error',error.message);
+                                                });
+                                            }).catch(error=>{
+                                                console.log(error);
+                                                Alert.alert('Error',error.message);
+                                            });
                                         }
                                         if(user.email != email){
                                             const credential = auth.EmailAuthProvider.credential(user.email,oldPassword);
@@ -114,14 +120,14 @@ export default function EditProfileScreen({navigation}){
                                                     user.updateEmail(email)
                                                         .then(res=>{
                                                             console.log("Email updated successfully");
-                                                            docRef = firestore()
+                                                            firestore()
                                                                 .collection('USERS')
                                                                 .doc(userDocID)
-
-                                                            docRef.update({
+                                                                .update({
                                                                 email:email
                                                             }).then(res=>{
                                                                 console.log("User updated");
+                                                                
                                                             }).catch(error=>{
                                                                 console.log(error);
                                                                 Alert.alert('Error',error.message);
@@ -199,9 +205,6 @@ const styles = StyleSheet.create({
     },
     updateButtonLabel:{
         fontSize: 20
-    },
-    navButtontext:{
-        fontSize: 16
     },
     noteText:{
         paddingTop: 15,

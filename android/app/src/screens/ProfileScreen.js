@@ -4,21 +4,20 @@ import { Title, Text } from 'react-native-paper';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
-import auth, { firebase } from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
 export default function ProfileScreen(){
     const { user } = useContext(AuthContext);
-    const currentUser = user.toJSON();
-    const [email, setEmail] = useState(currentUser.email);
-    const [name, setName] = useState(currentUser.displayName);
+    const [email, setEmail] = useState(user.email);
+    const [name, setName] = useState(user.displayName);
     const [oldPassword, setOldPassword] = useState('');
     const [userDocID, setUserDocID] = useState([]);
 
     useEffect(()=>{
         firestore()
             .collection('USERS')
-            .where('email','==',user.email)
+            .where('uid','==',user.uid)
             .get()
             .then(querySnapshot=>{
                 querySnapshot.forEach(doc=>{
@@ -36,7 +35,7 @@ export default function ProfileScreen(){
                 labelName='Display Name'
                 value={name}
                 autoCapitalize='none' //react-native TextInput props
-                //onChangeText={userEmail => setEmail(userEmail)}
+                //onChangeText={userName => setName(userName)}
                 editable={false}
             />
             <FormInput
@@ -59,11 +58,9 @@ export default function ProfileScreen(){
                 title='Delete Profile'
                 modeValue='contained' //button with a background color and elevation shadow
                 labelStyle={styles.deleteButtonLabel}
+                disabled={oldPassword.length===0}
                 onPress={() => {
-                    if(oldPassword.length==0){
-                        Alert.alert('Error','You should enter your password to delete this profile')
-                    }
-                    else if(oldPassword.length>0){
+                    if(oldPassword.length>0){
                         Alert.alert(
                             'Delete Account Permanently',
                             'Are you sure you want to delete this Account? Once deleted there is no way back!',
@@ -78,11 +75,10 @@ export default function ProfileScreen(){
                                                 user.delete()
                                                     .then(res=>{
                                                         console.log("User deleted successfully");
-                                                        docRef = firestore()
+                                                        firestore()
                                                             .collection('USERS')
                                                             .doc(userDocID)
-                                                            
-                                                        docRef.delete()
+                                                            .delete()
                                                             .then(res=>{
                                                                 console.log("User removed");
                                                             }).catch(error=>{
@@ -125,8 +121,5 @@ const styles = StyleSheet.create({
     },
     deleteButtonLabel:{
         fontSize: 20
-    },
-    navButtontext:{
-        fontSize: 16
     }
 });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View,  StyleSheet } from 'react-native';
+import { View,  StyleSheet, Alert } from 'react-native';
 import { IconButton, Title } from 'react-native-paper';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
@@ -7,11 +7,9 @@ import firestore from '@react-native-firebase/firestore';
 
 export default function EditRoomScreen({navigation,route}){
     const [roomName, setRoomName] = useState(route.params.name);
-    //console.log(route.params.id);
 
     function handleButtonPress(){
         if(roomName.length>0){
-            console.log("Hey from Button " + route.params.id);
             const docRef = firestore()
                 .collection('THREADS')
                 .doc(route.params.id)
@@ -21,7 +19,9 @@ export default function EditRoomScreen({navigation,route}){
             }).then(res=>{
                 console.log("Document updated successfully");
                 navigation.navigate('Home');
-                //Later try the querySnapShot thing and get real time room name
+            }).catch(error=>{
+              console.log(error);
+              Alert.alert('Error',error.message);
             })
         }
     }
@@ -49,7 +49,7 @@ export default function EditRoomScreen({navigation,route}){
               modeValue='contained'
               labelStyle={styles.buttonLabel}
               onPress={() => handleButtonPress()}
-              disabled={roomName.length === 0} //=== - no type conversion and return true only if both value and type are identical
+              disabled={roomName.length === 0 || roomName === route.params.name} //=== - no type conversion and return true only if both value and type are identical
             />
           </View>
         </View>

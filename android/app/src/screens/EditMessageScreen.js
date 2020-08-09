@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View,  StyleSheet } from 'react-native';
+import { View,  StyleSheet, Alert } from 'react-native';
 import { IconButton, Title } from 'react-native-paper';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
@@ -7,7 +7,6 @@ import firestore from '@react-native-firebase/firestore';
 
 export default function EditMessageScreen({navigation,route}){
     const [message, setMessage] = useState(route.params.text);
-    //console.log(route.params.id);
 
     function handleButtonPress(){
         if(message.length>0){
@@ -24,6 +23,7 @@ export default function EditMessageScreen({navigation,route}){
                 navigation.navigate('Room');
             }).catch(error=>{
                 console.log(error);
+                Alert.alert('Error',error.message);
             })
         }
     }
@@ -51,7 +51,7 @@ export default function EditMessageScreen({navigation,route}){
               modeValue='contained'
               labelStyle={styles.buttonLabel}
               onPress={() => handleButtonPress()}
-              disabled={message.length === 0} //=== - no type conversion and return true only if both value and type are identical
+              disabled={message.length === 0 || message === route.params.text} //=== - no type conversion and return true only if both value and type are identical
             />
           </View>
         </View>

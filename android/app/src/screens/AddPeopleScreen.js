@@ -10,38 +10,49 @@ export default function AddPeopleScreen({navigation, route}){
     const [currentUsers, setCurrentUsers] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
     const [addUsers, setAddUsers] = useState([]);
+    const [addUserNames,setAddUserNames] = useState([]);
 
     useEffect(()=>{
-        firestore()
+        const unsub = firestore()
             .collection('THREADS')
             .doc(route.params.id)
             .onSnapshot(snapshot=>{
               const elemsCur = snapshot._data.users;
               setCurrentUsers(snapshot._data.users);
             
-              firestore()
+              const unsubscribe = firestore()
               .collection('USERS')
               .onSnapshot(snapshot=>{
                   const elemsAll=[];
                   snapshot.docs.map(doc=>{
-                    const data = {
-                      displayName:doc._data.name,
-                      email:doc._data.email
-                    }
-                    elemsAll.push(data);
+                    elemsAll.push(doc._data.uid);
                   },error=>{
                       console.log(error);
                   });
                   setAllUsers(elemsAll);
-                  const add = elemsAll.filter(x=>!elemsCur.includes(x));
-                  setAddUsers(elemsAll.filter(x=>!elemsCur.includes(x)));
-                  console.log("Inside ");
-                  console.log(add);
-                  if(loading){
-                    setLoading(false)
-                  }
-            });
+                  const elemsAdd = elemsAll.filter(x=>!elemsCur.includes(x))
+                  setAddUsers(elemsAdd);
+
+                  const elemsPeople = [];
+                  elemsAdd.forEach(id=>{
+                  const unsubscribe = firestore()
+                          .collection('USERS')
+                          .where('uid','==',id)
+                          .onSnapshot(snapshot=>{
+                            snapshot.docs.forEach(doc=>{
+                              elemsPeople.push({uid:id,name:doc._data.name});
+                            })
+                            setAddUserNames(elemsPeople);
+                            return()=>unsubscribe();
+                        })
+                })
+                  return()=>unsubscribe();
+            })
+            return()=>unsub();
         });
+        if(loading){
+          setLoading(false)
+        }
             
     }, []);
 
@@ -62,9 +73,9 @@ export default function AddPeopleScreen({navigation, route}){
           <View style={styles.innerContainer}>
             <Text style={styles.text}>Tap on a user to add</Text>
             <FlatList
-              data={addUsers}
-              keyExtractor={item=>item.email}
-              extraData={addUsers}
+              data={addUserNames}
+              keyExtractor={item=>item.uid}
+              extraData={addUserNames}
               ItemSeperatorComponent={()=><Divider />}
               renderItem={({ item })=>(
                 <TouchableOpacity
@@ -79,11 +90,13 @@ export default function AddPeopleScreen({navigation, route}){
                                   firestore()
                                     .collection('THREADS')
                                     .doc(route.params.id)
-                                    .update({users:firestore.FieldValue.arrayUnion(item)})
+                                    .update({users:firestore.FieldValue.arrayUnion(item.uid)})
                                     .then(res=>{
                                       console.log('User added to the chat');
+                                      navigation.navigate('People');
                                     }).catch(error=>{
                                       console.log(error);
+                                      Alert.alert('Error',error.message);
                                     });
                                 }
                               },
@@ -96,7 +109,7 @@ export default function AddPeopleScreen({navigation, route}){
                         }}
                 >
                   <List.Item
-                      title={item.displayName}
+                      title={item.name}
                       titleNumberOfLines={1}
                       titleStyle={styles.listTitle}
                   />
@@ -111,9 +124,7 @@ export default function AddPeopleScreen({navigation, route}){
 const styles = StyleSheet.create({
     container:{
         backgroundColor: '#f5f5f5',
-        flex: 1,
-        //justifyContent: 'center',
-        //alignItems: 'center'
+        flex: 1
     },
     rootContainer: {
       flex: 1,

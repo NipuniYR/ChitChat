@@ -42,7 +42,7 @@ export default function SignupScreen({navigation}){
             <FormButton
                 title='Signup'
                 modeValue='contained'
-                labelStyle={styles.loginButtonLabel}
+                labelStyle={styles.signupButtonLabel}
                 disabled={email.length===0 || password.length===0 || rePassword.length===0}
                 onPress={() => {
                     if(rePassword==password){
@@ -75,11 +75,8 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginBottom: 10
     },
-    loginButtonLabel:{
+    signupButtonLabel:{
         fontSize: 22
-    },
-    navButtonText:{
-        fontSize: 18
     },
     navButton:{
         marginTop: 10

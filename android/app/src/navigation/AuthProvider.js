@@ -26,10 +26,9 @@ export const AuthProvider = ({children}) => {
                 register: async (email,password, name) => {
                         await auth().createUserWithEmailAndPassword(email,password)
                             .then(userCreds=>{
-                                console.log(name);
                                 userCreds.user.updateProfile({
                                     displayName:name
-                                }).then(()=>{
+                                }).then(res=>{
                                     const currentUser = auth().currentUser;
                                     firestore()
                                     .collection('USERS')
@@ -37,7 +36,7 @@ export const AuthProvider = ({children}) => {
                                         name: currentUser.displayName,
                                         uid: currentUser.uid,
                                         email: currentUser.email
-                                    }).then(()=>{
+                                    }).then(res=>{
                                         console.log("Added new user");
                                     }).catch(error=>console.log(error))
                                 }).catch(error=>console.log(error))

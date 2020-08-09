@@ -20,12 +20,7 @@ export default function AddRoomScreen({navigation}){
               text: `you have joined the room ${roomName}.`,
               createdAt: new Date().getTime()
             },
-            users:[
-              {
-                displayName: user.displayName,
-                email:user.email
-              }
-            ]
+            users:[user.uid]
             })
           .then((docRef) => {
             docRef.collection('MESSAGES').add({

@@ -8,19 +8,34 @@ import { AuthContext } from '../navigation/AuthProvider';
 
 export default function PeopleScreen({navigation, route}){
     const { user } = useContext(AuthContext);
+    const [peopleID, setPeopleID] = useState([]);
     const [people, setPeople] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(()=>{
-        firestore()
+        const unsub =firestore()
             .collection('THREADS')
             .doc(route.params.id)
             .onSnapshot(snapshot=>{
-            setPeople(snapshot._data.users);
-            if(loading){
-                setLoading(false)
-            }
+                const peopleIDElems = snapshot._data.users;
+                setPeopleID(peopleIDElems);
+                const peopleElems = [];
+                peopleIDElems.forEach(id=>{
+                    firestore()
+                        .collection('USERS')
+                        .where('uid','==',id)
+                        .onSnapshot(snapshot=>{
+                            snapshot.forEach(doc=>{
+                                peopleElems.push({uid:id,name:doc._data.name})
+                            })
+                            setPeople(peopleElems);
+                        })
+                })
+                return()=>unsub();
         })
+        if(loading){
+            setLoading(false)
+        }
             
     }, []);
 
@@ -30,10 +45,10 @@ export default function PeopleScreen({navigation, route}){
 
     return(
         <View style={styles.container}>
-            <Text style={styles.text}>Tap on a user to remove</Text>
+            <Text style={styles.textdeco}>Tap on a user to remove</Text>
             <FlatList
                 data={people}
-                keyExtractor={item=>item.email}
+                keyExtractor={item=>item.uid}
                 extraData={people}
                 ItemSeperatorComponent={()=> <Divider />}
                 renderItem={({ item })=>(
@@ -49,9 +64,9 @@ export default function PeopleScreen({navigation, route}){
                                     firestore()
                                       .collection('THREADS')
                                       .doc(route.params.id)
-                                      .update({users:firestore.FieldValue.arrayRemove(item)})
+                                      .update({users:firestore.FieldValue.arrayRemove(item.uid)})
                                       .then(res=>{
-                                        if(item==user.email){
+                                        if(item.uid==user.uid){
                                             navigation.navigate('Home');
                                         }
                                         console.log('User removed from the chat');
@@ -69,7 +84,7 @@ export default function PeopleScreen({navigation, route}){
                           }}
                     >
                         <List.Item
-                            title={item.displayName}
+                            title={item.name}
                             titleNumberOfLines={1}
                             titleStyle={styles.listTitle}
                         />
@@ -83,16 +98,14 @@ export default function PeopleScreen({navigation, route}){
 const styles = StyleSheet.create({ 
     container:{
         backgroundColor: '#f5f5f5',
-        flex: 1,
-        //justifyContent: 'center',
-        //alignItems: 'center'
+        flex: 1
     },
     listTitle:{
         fontSize: 22,
         alignContent: 'center',
         textAlign: 'center'
     },
-    text:{
+    textdeco:{
         alignItems: 'center',
         textAlign: 'center'
     } 
