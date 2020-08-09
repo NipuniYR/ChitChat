@@ -119,7 +119,6 @@ function ChatApp(){
                                 <Menu.Item
                                     title="Delete Room"
                                     onPress={()=>{
-                                        console.log("These are the route parameters "+route.params.thread._id)
                                         Alert.alert(
                                             'Delete Room',
                                             'Are you sure you want to delete this Room?',
@@ -178,11 +177,6 @@ function ChatApp(){
                     )
                 })}
             />
-
-            {/*<ChatAppStack.Screen
-                name='Registered Users'
-                component={AddPeopleScreen}
-            />*/}
         </ChatAppStack.Navigator>
     );
 }

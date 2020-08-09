@@ -5,6 +5,7 @@ import firestore from '@react-native-firebase/firestore';
 import Loading from '../components/Loading';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { AuthContext } from '../navigation/AuthProvider';
+import auth from '@react-native-firebase/auth';
 
 export default function HomeScreen({navigation}){
     const { user } = useContext(AuthContext);
@@ -14,7 +15,7 @@ export default function HomeScreen({navigation}){
     useEffect(()=>{
         const unsubscribe = firestore()
             .collection('THREADS')
-            .where('users','array-contains',{ displayName:user.displayName, email:user.email })
+            .where('users','array-contains',user.uid)
             .orderBy('latestMessage.createdAt','desc')
             .onSnapshot((querySnapshot)=>{ //creates a snapshot and updates everytime when the content changed 
                 const threads = querySnapshot.docs.map(documentSnapshot=>{
@@ -35,8 +36,6 @@ export default function HomeScreen({navigation}){
                 if(loading){
                     setLoading(false);
                 }
-                console.log("User data Hereewenwjewjejwjnewnj");
-                console.log(user)
             });
 
             return()=> unsubscribe();
@@ -75,8 +74,6 @@ const styles = StyleSheet.create({
     container:{
         backgroundColor: '#f5f5f5',
         flex: 1,
-        //justifyContent: 'center',
-        //alignItems: 'center'
     },
     listTitle:{
         fontSize: 22,
