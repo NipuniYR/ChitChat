@@ -17,22 +17,29 @@ export default function AddPeopleScreen({navigation, route}){
             .doc(route.params.id)
             .onSnapshot(snapshot=>{
               const elemsCur = snapshot._data.users;
-            setCurrentUsers(snapshot._data.users);
+              setCurrentUsers(snapshot._data.users);
             
-            firestore()
-            .collection('USERS')
-            .onSnapshot(snapshot=>{
-                const elemsAll=[];
-                snapshot.docs.map(doc=>{
-                  elemsAll.push(doc._data.email);
-                },error=>{
-                    console.log(error);
-                });
-                setAllUsers(elemsAll);
-                setAddUsers(elemsAll.filter(x=>!elemsCur.includes(x)));
-                if(loading){
-                  setLoading(false)
-                }
+              firestore()
+              .collection('USERS')
+              .onSnapshot(snapshot=>{
+                  const elemsAll=[];
+                  snapshot.docs.map(doc=>{
+                    const data = {
+                      displayName:doc._data.name,
+                      email:doc._data.email
+                    }
+                    elemsAll.push(data);
+                  },error=>{
+                      console.log(error);
+                  });
+                  setAllUsers(elemsAll);
+                  const add = elemsAll.filter(x=>!elemsCur.includes(x));
+                  setAddUsers(elemsAll.filter(x=>!elemsCur.includes(x)));
+                  console.log("Inside ");
+                  console.log(add);
+                  if(loading){
+                    setLoading(false)
+                  }
             });
         });
             
@@ -56,7 +63,7 @@ export default function AddPeopleScreen({navigation, route}){
             <Text style={styles.text}>Tap on a user to add</Text>
             <FlatList
               data={addUsers}
-              keyExtractor={item=>item}
+              keyExtractor={item=>item.email}
               extraData={addUsers}
               ItemSeperatorComponent={()=><Divider />}
               renderItem={({ item })=>(
@@ -89,7 +96,7 @@ export default function AddPeopleScreen({navigation, route}){
                         }}
                 >
                   <List.Item
-                      title={item}
+                      title={item.displayName}
                       titleNumberOfLines={1}
                       titleStyle={styles.listTitle}
                   />

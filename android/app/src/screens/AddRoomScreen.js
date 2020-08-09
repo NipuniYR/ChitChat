@@ -21,7 +21,10 @@ export default function AddRoomScreen({navigation}){
               createdAt: new Date().getTime()
             },
             users:[
-              user.email
+              {
+                displayName: user.displayName,
+                email:user.email
+              }
             ]
             })
           .then((docRef) => {

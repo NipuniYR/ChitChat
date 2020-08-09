@@ -23,17 +23,24 @@ export const AuthProvider = ({children}) => {
                         Alert.alert('Error',error.message);
                     }
                 },
-                register: async (email,password) => {
+                register: async (email,password, name) => {
                         await auth().createUserWithEmailAndPassword(email,password)
                             .then(userCreds=>{
-                                firestore()
+                                console.log(name);
+                                userCreds.user.updateProfile({
+                                    displayName:name
+                                }).then(()=>{
+                                    const currentUser = auth().currentUser;
+                                    firestore()
                                     .collection('USERS')
                                     .add({
-                                        uid: userCreds.user.uid,
-                                        email: userCreds.user.email
-                                    }).then(res=>{
+                                        name: currentUser.displayName,
+                                        uid: currentUser.uid,
+                                        email: currentUser.email
+                                    }).then(()=>{
                                         console.log("Added new user");
-                                    })
+                                    }).catch(error=>console.log(error))
+                                }).catch(error=>console.log(error))
                             }).catch(error=>{
                             console.log(error);
                             Alert.alert('Error',error.message);
