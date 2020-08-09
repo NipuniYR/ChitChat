@@ -6,6 +6,7 @@ import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
 
 export default function SignupScreen({navigation}){
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rePassword, setRePassword] = useState('');
@@ -15,9 +16,15 @@ export default function SignupScreen({navigation}){
         <View style={styles.container}>
             <Title style={styles.titletext}>Register to ChitChat</Title>
             <FormInput
+                labelName='Display name'
+                value={name}
+                onChangeText={name=>setName(name)}
+            />
+            <FormInput
                 labelName='Email'
                 value={email}
                 autoCapitalize='none'
+                keyboardType='email-address'
                 onChangeText={userEmail => setEmail(userEmail)}
             />
             <FormInput
@@ -39,7 +46,7 @@ export default function SignupScreen({navigation}){
                 disabled={email.length===0 || password.length===0 || rePassword.length===0}
                 onPress={() => {
                     if(rePassword==password){
-                        register(email, password);
+                        register(email, password, name);
                     }
                     else{
                         Alert.alert('Error','Re-Password do not match. Please try again.');

@@ -167,8 +167,7 @@ export default function RoomScreen({ route, navigation }){
 
                                         docRef.delete()
                                             .then(res=>{
-                                                console.log("Room deleted successfully");
-                                                navigation.navigate('Home');
+                                                console.log("Message deleted successfully");
                                             }).catch(error=>{
                                                 console.log(error);
                                             })

@@ -18,6 +18,7 @@ export default function LoginScreen({navigation}){
             <FormInput
                 labelName='Email'
                 value={email}
+                keyboardType='email-address'
                 autoCapitalize='none' //react-native TextInput props
                 onChangeText={userEmail => setEmail(userEmail)}
             />

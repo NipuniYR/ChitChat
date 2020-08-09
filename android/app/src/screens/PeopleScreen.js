@@ -33,7 +33,7 @@ export default function PeopleScreen({navigation, route}){
             <Text style={styles.text}>Tap on a user to remove</Text>
             <FlatList
                 data={people}
-                keyExtractor={item=>item}
+                keyExtractor={item=>item.email}
                 extraData={people}
                 ItemSeperatorComponent={()=> <Divider />}
                 renderItem={({ item })=>(
@@ -69,7 +69,7 @@ export default function PeopleScreen({navigation, route}){
                           }}
                     >
                         <List.Item
-                            title={item}
+                            title={item.displayName}
                             titleNumberOfLines={1}
                             titleStyle={styles.listTitle}
                         />

@@ -14,7 +14,7 @@ export default function HomeScreen({navigation}){
     useEffect(()=>{
         const unsubscribe = firestore()
             .collection('THREADS')
-            .where('users','array-contains',user.email)
+            .where('users','array-contains',{ displayName:user.displayName, email:user.email })
             .orderBy('latestMessage.createdAt','desc')
             .onSnapshot((querySnapshot)=>{ //creates a snapshot and updates everytime when the content changed 
                 const threads = querySnapshot.docs.map(documentSnapshot=>{
@@ -35,6 +35,8 @@ export default function HomeScreen({navigation}){
                 if(loading){
                     setLoading(false);
                 }
+                console.log("User data Hereewenwjewjejwjnewnj");
+                console.log(user)
             });
 
             return()=> unsubscribe();

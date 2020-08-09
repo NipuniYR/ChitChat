@@ -11,6 +11,7 @@ export default function ProfileScreen(){
     const { user } = useContext(AuthContext);
     const currentUser = user.toJSON();
     const [email, setEmail] = useState(currentUser.email);
+    const [name, setName] = useState(currentUser.displayName);
     const [oldPassword, setOldPassword] = useState('');
     const [userDocID, setUserDocID] = useState([]);
 
@@ -31,6 +32,13 @@ export default function ProfileScreen(){
     return(
         <View style={styles.container}>
             <Title style={styles.titleText}>Profile Details</Title>
+            <FormInput
+                labelName='Display Name'
+                value={name}
+                autoCapitalize='none' //react-native TextInput props
+                //onChangeText={userEmail => setEmail(userEmail)}
+                editable={false}
+            />
             <FormInput
                 labelName='Email'
                 value={email}
